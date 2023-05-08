@@ -103,7 +103,8 @@ function displayKanap(data) {
         <div class="cart__item__content__settings">
             <div class="cart__item__content__settings__quantity">
                 <p>Qté : </p>
-                <input onclick="totalDisplayOnClick(${i})" type="number" class="itemQuantity" name="itemQuantity"  id="itemQuantity${i}" min="1" max="100" value=${data.nbr} onkeydown="if (event.keyCode === 189 || event.keyCode === 109) return false;">
+                <input onclick="totalDisplayOnClick(0)" type="number" class="itemQuantity" name="itemQuantity" id="itemQuantity0" min="1" max="100" value="4" onkeydown="if (event.keyCode === 38 || event.keyCode === 40 || event.keyCode === 189 || event.keyCode === 109 || event.keyCode === 54 ) return false;">
+
 
             </div>
                 <div class="cart__item__content__settings__delete">
