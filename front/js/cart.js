@@ -4,9 +4,17 @@ let urlOdrer = `http://localhost:3000/api/products/order`; // URL pour envoyer l
 
 let coulKanap = []; //va permettre d'afficher la couleur sélectionné; utilisé dans la fonction getKanapIdApi() et displayKanap()
 let nbrKanap = []; //va permettre d'afficher le nombre sélectionné; utilisé dans la fonction getKanapIdApi() et displayKanap()
+let idKanap = [];
+let KanapIdTDOC = [];
+let ColKanapTDOC = [];
 let i = 0; // init. i va permettre le stockage de données ds des tab. aux différentes itérations
 let kanapLoad; // va permettre de récupérer le LS initiale au chargement de la page
 let kanapReload; // va permettre de reload la page si un utilisateur ajoute un "kanap", alors que carte.html est affiché
+
+let dataNbr = 0; // va contenir le nombre des "kanap" sélectionné par l'utilisateur
+let dataPrice = 0; // va contenir le prix total des "kanap" sélectionné par l'utilisateur
+let tabPrice = []; // va contenir le prix spécifique de chaque "kanap" sélectionner pour le récupérer lors d'un changement du nombre de "kanap" par l'utilisateur
+let affichage = []; //Tableau d'affichage des données "kanap" appelé dans "diplayKanap" et dont l'index évolue à chaque itération de "i" de la fonction getKanapIdApi
 
 /******EVENEMENT D'ECOUTE AU CHARGEMENT ***********/
 
@@ -58,6 +66,7 @@ function getKanapIdApi() {
 		// Parcours NewKanap pour créer coul. et nbr. Et fetch avec l'id
 		coulKanap.push(dataKanap.colors);
 		nbrKanap.push(dataKanap.nbr);
+		idKanap.push(dataKanap.id);
 		fetch(url + `${dataKanap.id}`) //requête "fetch" pour aller chercher les informations dans l'API
 			.then(function (response) {
 				//Fonction qui récupère la "promise" de la requête "fetch"
@@ -77,20 +86,19 @@ getKanapIdApi(); // appel de la fonction qui cherche les données dans l'API
 
 /******FONCTION QUI AFFICHE LES "KANAP" DU PANIER ***********/
 
-let dataNbr = 0; // va contenir le nombre des "kanap" sélectionné par l'utilisateur
-let dataPrice = 0; // va contenir le prix total des "kanap" sélectionné par l'utilisateur
-let tabPrice = []; // va contenir le prix spécifique de chaque "kanap" sélectionner pour le récupérer lors d'un changement du nombre de "kanap" par l'utilisateur
-let affichage = []; //Tableau d'affichage des données "kanap" appelé dans "diplayKanap" et dont l'index évolue à chaque itération de "i" de la fonction getKanapIdApi
-
 function displayKanap(data) {
 	let TailleTab = []; //Variable qui va permettre de lancer la fonction totalDisplay
 	TailleTab = getKanapLS(); //Recup "kanap" LS dans "TailleTab" pour avoir la lgr du tab.en provenance du LS
 	data.colors = coulKanap[i]; //récup. coul. kanap à l'itération du tab. dataKanap de la fonction getKanapIdApi()
+	//ColKanap = coulKanap[i];
 	data.nbr = nbrKanap[i]; //récup. nbr kanap à l'itération du tab. dataKanap de la fonction getKanapIdApi()
+
 	dataNbr = Number(data.nbr) + Number(dataNbr); // Nombre total de "kanap" ajouté au panier pour fonction "totalDisplay"
 	dataPrice = data.price * data.nbr + Number(dataPrice); // Prix total des "kanap" ajouté au panier pour fonction "totalDisplay"
 	priceKanap = data.nbr * data.price; //Prix "kanap" en fonction du nombre sélectionné
 	tabPrice[i] = data.price; // Tableau des prix des "kanaps" pour fonction "totalDisplayOnClick"
+	ColKanapTDOC[i] = data.colors;
+	KanapIdTDOC[i] = data._id;
 	affichage[i] =
 		//Tableau d'affichage des différents "kanaps" sélectionnés
 		`<article class="cart__item"> 
@@ -103,9 +111,7 @@ function displayKanap(data) {
         <div class="cart__item__content__settings">
             <div class="cart__item__content__settings__quantity">
                 <p>Qté : </p>
-                <input onclick="totalDisplayOnClick(0)" type="number" class="itemQuantity" name="itemQuantity" id="itemQuantity0" min="1" max="100" value="4" onkeydown="if (event.keyCode === 38 || event.keyCode === 40 || event.keyCode === 189 || event.keyCode === 109 || event.keyCode === 54 ) return false;">
-
-
+                <input onclick="totalDisplayOnClick(${i})" type="number" class="itemQuantity" name="itemQuantity"  id="itemQuantity${i}" min="1" max="100" value=${data.nbr} onkeydown="if (event.keyCode === 38 || event.keyCode === 40 || event.keyCode === 189 || event.keyCode === 109 || event.keyCode === 54 ) return false;>
             </div>
                 <div class="cart__item__content__settings__delete">
                 <p onclick="deleteItem (${i})" class="deleteItem" >Supprimer</p>
@@ -153,6 +159,21 @@ function totalDisplayOnClick(e) {
 		document.querySelector("#totalQuantity").innerHTML =
 			Number(document.querySelector("#totalQuantity").innerHTML) +
 			Number(document.querySelector(`#itemQuantity${j}`).value);
+	}
+	KanaplocalStorage = getKanapLS(); //Récup. "Kanap" LS
+	// Recherche de l'élément correspondant dans le localStorage
+	for (let i = 0; i < KanaplocalStorage.length; i++) {
+		// Vérification de l'id et de la couleur
+		if (
+			KanaplocalStorage[i].id === KanapIdTDOC[e] &&
+			KanaplocalStorage[i].colors === ColKanapTDOC[e]
+		) {
+			// Mise à jour de la propriété "nbr"
+			KanaplocalStorage[i].nbr = itemQuantityKanap;
+			// Enregistrement de l'élément mis à jour dans le localStorage
+			saveKanap(KanaplocalStorage);
+			break; // Sortie de la boucle une fois que l'élément a été trouvé
+		}
 	}
 }
 
