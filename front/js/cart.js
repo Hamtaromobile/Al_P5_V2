@@ -110,7 +110,7 @@ function displayKanap(data) {
         <div class="cart__item__content__settings">
             <div class="cart__item__content__settings__quantity">
                 <p>Qté : </p>
-                <input onclick="totalDisplayOnClick(${i})" type="number" class="itemQuantity" name="itemQuantity"  id="itemQuantity${i}" min="1" max="100" value=${data.nbr} onkeydown="if (event.keyCode === 38 || event.keyCode === 40 || event.keyCode === 189 || event.keyCode === 109 || event.keyCode === 54 ) return false;>
+                <input onclick="totalDisplayOnClick(${i})" type="number" class="itemQuantity" name="itemQuantity"  id="itemQuantity${i}" min="1" max="100" value=${data.nbr} oninput="if(this.value < 1) this.value = 1; if(this.value > 100) this.value = 100;">
             </div>
                 <div class="cart__item__content__settings__delete">
                 <p onclick="deleteItem (${i})" class="deleteItem" >Supprimer</p>
@@ -181,27 +181,19 @@ function totalDisplayOnClick(e) {
 
 function deleteItem(e) {
 	//appel au "click" avec recup. de l'index "e" envoyé par "(${i})"
-	let KanapDI = getKanapLS(); // Récup. panier LS
-	let indexKanap = KanapDI[e]; //Elément du tab. à suppà l'index "e"
-	let index = KanapDI.indexOf(indexKanap); //renvoie 1er index auquel un élément donné peut être trouvé dans le tableau, ou -1 s'il n'est pas présent.
+	let KanapDI = getKanapLS();
+	let indexKanap = KanapDI[e];
+	let index = KanapDI.indexOf(indexKanap);
 	if (index > -1) {
-		KanapDI.splice(index, 1); // sup. 1 élément à "index"
+		KanapDI.splice(index, 1);
 	}
-	/*const productElement = document.querySelector(`#kanap${e}`);
-	productElement.remove();*/
-
-	saveKanap(KanapDI); //appel de la fonction qui sauvegarde dans LS
-
-	/// Vider les anciens articles dans le DOM
-	//document.querySelector("#cart__items").innerHTML = "";
-
-	getKanapIdApi();
+	saveKanap(KanapDI);
+	window.location.reload();
 }
 
-document.querySelector("#order").addEventListener("click", validForm); //Ecoute du "click" bouton "Commander !"
-/*Appel de la fonction "validForm"*/
+document.querySelector("#order").addEventListener("click", validForm);
 
-let allowSend = new Boolean(false); //variable qui va autoriser avec la fonction dataUser l'envoie des données dans l'API avec la fonction "sendData"
+let allowSend = new Boolean(false);
 
 /******FONCTION QUI COMPART LES DONNEES ENTREES PAR L'UTILISATEUR AVEC DES REGEXS ***********/
 
