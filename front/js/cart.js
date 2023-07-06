@@ -62,6 +62,7 @@ function saveKanap(Kanap) {
 
 function getKanapIdApi() {
 	let newKanap = getKanapLS(); // LS dans "newKanap"
+	console.log("newKanap", newKanap);
 	for (let dataKanap of newKanap) {
 		// Parcours NewKanap pour créer coul. et nbr. Et fetch avec l'id
 		coulKanap.push(dataKanap.colors);
@@ -90,9 +91,7 @@ function displayKanap(data) {
 	let TailleTab = []; //Variable qui va permettre de lancer la fonction totalDisplay
 	TailleTab = getKanapLS(); //Recup "kanap" LS dans "TailleTab" pour avoir la lgr du tab.en provenance du LS
 	data.colors = coulKanap[i]; //récup. coul. kanap à l'itération du tab. dataKanap de la fonction getKanapIdApi()
-	//ColKanap = coulKanap[i];
-	data.nbr = nbrKanap[i]; //récup. nbr kanap à l'itération du tab. dataKanap de la fonction getKanapIdApi()
-
+	data.nbr = nbrKanap[i]; //récup. nbr kanap à l'itération du tab. dataKanap de la fonction getKanapIdApi()t-b
 	dataNbr = Number(data.nbr) + Number(dataNbr); // Nombre total de "kanap" ajouté au panier pour fonction "totalDisplay"
 	dataPrice = data.price * data.nbr + Number(dataPrice); // Prix total des "kanap" ajouté au panier pour fonction "totalDisplay"
 	priceKanap = data.nbr * data.price; //Prix "kanap" en fonction du nombre sélectionné
@@ -101,7 +100,7 @@ function displayKanap(data) {
 	KanapIdTDOC[i] = data._id;
 	affichage[i] =
 		//Tableau d'affichage des différents "kanaps" sélectionnés
-		`<article class="cart__item"> 
+		`<article id="kanap${i}" class="cart__item"> 
         <div class="cart__item__img">  
             <img src="${data.imageUrl}" alt="${data.altTxt}"/> 
         </div> 
@@ -118,6 +117,7 @@ function displayKanap(data) {
             </div>
         </div>
     </article>`;
+
 	/* envoie des données dans carte.html*/
 	document.querySelector("#cart__items").innerHTML = affichage.join(""); // join("") : supp des virgules entre tab.
 	if (TailleTab.length == affichage.length) {
@@ -187,8 +187,15 @@ function deleteItem(e) {
 	if (index > -1) {
 		KanapDI.splice(index, 1); // sup. 1 élément à "index"
 	}
+	/*const productElement = document.querySelector(`#kanap${e}`);
+	productElement.remove();*/
+
 	saveKanap(KanapDI); //appel de la fonction qui sauvegarde dans LS
-	window.location.reload(); // reload page
+
+	/// Vider les anciens articles dans le DOM
+	//document.querySelector("#cart__items").innerHTML = "";
+
+	getKanapIdApi();
 }
 
 document.querySelector("#order").addEventListener("click", validForm); //Ecoute du "click" bouton "Commander !"
